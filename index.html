@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SaveBox — Save videos to your phone</title>
+<meta name="description" content="Paste a video link, pick a quality, and SaveBox saves it straight to your phone's gallery. YouTube, TikTok, Instagram and Facebook. No account required.">
+<link rel="canonical" href="https://savebox.live/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://savebox.live/">
+<meta property="og:title" content="SaveBox — Save videos to your phone">
+<meta property="og:description" content="Paste a video link, pick a quality, and SaveBox saves it straight to your phone's gallery. No account required.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📥</text></svg>">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f7f9;
+    --bg-raised: #ffffff;
+    --fg: #14161a;
+    --fg-muted: #5b6472;
+    --border: #e3e6ea;
+    --accent: #1f6feb;
+    --accent-fg: #ffffff;
+    --shadow: 0 1px 2px rgb(16 22 32 / .04), 0 8px 24px rgb(16 22 32 / .06);
+    --radius: 14px;
+    --maxw: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1117;
+      --bg-soft: #131922;
+      --bg-raised: #161d27;
+      --fg: #e8edf4;
+      --fg-muted: #99a5b5;
+      --border: #232c38;
+      --accent: #4f8ff7;
+      --accent-fg: #08121f;
+      --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0d1117;
+    --bg-soft: #131922;
+    --bg-raised: #161d27;
+    --fg: #e8edf4;
+    --fg-muted: #99a5b5;
+    --border: #232c38;
+    --accent: #4f8ff7;
+    --accent-fg: #08121f;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 17px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  a { color: var(--accent); }
+
+  /* ---------- header ---------- */
+  header {
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; gap: 16px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 650; font-size: 18px; letter-spacing: -.01em;
+    color: var(--fg); text-decoration: none;
+  }
+  .mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: var(--accent); color: var(--accent-fg);
+    display: grid; place-items: center; font-size: 16px; flex: none;
+  }
+  .nav { display: flex; gap: 22px; font-size: 15px; }
+  .nav a { color: var(--fg-muted); text-decoration: none; }
+  .nav a:hover { color: var(--fg); }
+  @media (max-width: 620px) { .nav { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 88px 0 72px; text-align: center; }
+  h1 {
+    font-size: clamp(34px, 6vw, 58px);
+    line-height: 1.08; letter-spacing: -.03em;
+    margin: 0 0 20px; font-weight: 700;
+  }
+  .lede {
+    font-size: clamp(17px, 2.2vw, 20px);
+    color: var(--fg-muted);
+    max-width: 620px; margin: 0 auto 34px;
+  }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 24px; border-radius: 11px;
+    font-size: 16px; font-weight: 560; text-decoration: none;
+    border: 1px solid transparent; cursor: default;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-fg); }
+  .btn-ghost {
+    background: var(--bg-raised); color: var(--fg);
+    border-color: var(--border); cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--fg-muted); }
+  .note { margin-top: 16px; font-size: 14px; color: var(--fg-muted); }
+
+  /* ---------- platforms ---------- */
+  .platforms {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin: 44px 0 0;
+  }
+  .chip {
+    padding: 7px 15px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--bg-raised);
+    font-size: 14.5px; color: var(--fg-muted);
+  }
+
+  /* ---------- sections ---------- */
+  section { padding: 64px 0; }
+  .band { background: var(--bg-soft); border-block: 1px solid var(--border); }
+  h2 {
+    font-size: clamp(24px, 3.4vw, 32px); letter-spacing: -.02em;
+    margin: 0 0 8px; font-weight: 680;
+  }
+  .sub { color: var(--fg-muted); margin: 0 0 36px; font-size: 16.5px; }
+
+  .steps { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); counter-reset: s; }
+  @media (max-width: 780px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    background: var(--bg-raised); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+  }
+  .step h3 { margin: 14px 0 6px; font-size: 17.5px; font-weight: 620; }
+  .step p { margin: 0; color: var(--fg-muted); font-size: 15.5px; }
+  .num {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent); color: var(--accent-fg);
+    display: grid; place-items: center; font-size: 14px; font-weight: 650;
+  }
+
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--bg-raised); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .card h3 { margin: 0 0 7px; font-size: 17.5px; font-weight: 620; }
+  .card p { margin: 0; color: var(--fg-muted); font-size: 15.5px; }
+
+  /* ---------- limits table ---------- */
+  .tablewrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { border-collapse: collapse; width: 100%; background: var(--bg-raised); font-size: 15.5px; }
+  th, td { text-align: left; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  th { font-weight: 620; font-size: 13.5px; text-transform: uppercase;
+       letter-spacing: .05em; color: var(--fg-muted); }
+  tr:last-child td { border-bottom: 0; }
+  td:last-child { color: var(--fg-muted); }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--border); padding: 36px 0;
+    color: var(--fg-muted); font-size: 14.5px;
+  }
+  .fbar { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .flinks { display: flex; gap: 20px; }
+  .flinks a { color: var(--fg-muted); text-decoration: none; }
+  .flinks a:hover { color: var(--fg); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <span class="mark" aria-hidden="true">↓</span>
+      SaveBox
+    </a>
+    <nav class="nav">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#plan">Free plan</a>
+    </nav>
+    <button class="btn btn-ghost" id="theme" type="button" aria-label="Toggle colour theme">
+      <span id="theme-icon" aria-hidden="true">◐</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <div class="wrap hero">
+    <h1>Save videos to your phone.</h1>
+    <p class="lede">
+      Paste a link, pick a quality, and SaveBox downloads the video straight into
+      your gallery — ready to watch offline, wherever you are.
+    </p>
+
+    <div class="cta">
+      <span class="btn btn-primary">Android app — coming soon</span>
+    </div>
+    <p class="note">No account needed. Open the app and paste a link.</p>
+
+    <div class="platforms">
+      <span class="chip">YouTube</span>
+      <span class="chip">TikTok</span>
+      <span class="chip">Instagram</span>
+      <span class="chip">Facebook</span>
+    </div>
+  </div>
+
+  <section class="band" id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="sub">Three steps, and the last one happens on its own.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Paste the link</h3>
+          <p>Copy a video URL from YouTube, TikTok, Instagram or Facebook and paste
+             it in. SaveBox shows you the title, length and thumbnail first.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Pick a quality</h3>
+          <p>Best available, 720p or 480p — whichever suits the video and the space
+             you have. You see the choice before anything downloads.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>It lands in your gallery</h3>
+          <p>The finished video is saved to Movies/SaveBox and shows up in your
+             gallery app like anything else you've recorded.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>Built to just work</h2>
+      <p class="sub">The details that decide whether a download is actually usable.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Plays on any device</h3>
+          <p>Every download is converted to an H.264/AAC MP4 with fast-start
+             enabled, so it opens natively on any phone instead of needing a
+             particular player.</p>
+        </div>
+        <div class="card">
+          <h3>No account required</h3>
+          <p>A fresh install works immediately as a guest, with its own history.
+             Creating an account is optional, and upgrades that guest in place —
+             nothing you've already downloaded is lost.</p>
+        </div>
+        <div class="card">
+          <h3>Your history, kept</h3>
+          <p>Every download is recorded, so you can see what you saved and when —
+             even after the file itself has been cleared from the server.</p>
+        </div>
+        <div class="card">
+          <h3>Nothing lingers</h3>
+          <p>Files are held on the server just long enough for your phone to fetch
+             them — 24 hours — then deleted automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="plan">
+    <div class="wrap">
+      <h2>Free plan</h2>
+      <p class="sub">What everyone gets, without paying and without an account.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>What</th><th>Limit</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Downloads per day</td><td>10</td><td>Resets every 24 hours</td></tr>
+            <tr><td>At the same time</td><td>2</td><td>Queue the rest, they run in turn</td></tr>
+            <tr><td>Quality</td><td>Up to best available</td><td>Capped only by the source</td></tr>
+            <tr><td>Account</td><td>Optional</td><td>Guests get the same limits</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap fbar">
+    <span>© <span id="year">2026</span> SaveBox</span>
+    <nav class="flinks">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#plan">Free plan</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Theme: follow the system unless the visitor has chosen otherwise.
+  (function () {
+    var root = document.documentElement;
+    var saved = null;
+    try { saved = localStorage.getItem('savebox-theme'); } catch (e) {}
+    if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+
+    var btn = document.getElementById('theme');
+    btn.addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark' ||
+                 (!root.hasAttribute('data-theme') &&
+                  matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = dark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('savebox-theme', next); } catch (e) {}
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  })();
+</script>
+
+</body>
+</html>
