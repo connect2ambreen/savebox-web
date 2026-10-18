@@ -8,6 +8,26 @@ two pages Google Play requires. That is a deliberate choice rather than a stage
 it has not grown out of — pages this size gain nothing from a bundler, and a
 static file has no build to break, no lockfile to audit and no runtime to patch.
 
+Everything the pages share lives in `assets/`:
+
+```
+assets/
+├── site.css      palette, type, header, footer, legal-page layout
+├── site.js       theme toggle, mobile menu, scroll reveal (all optional)
+├── fonts/        Fraunces, Karla, IBM Plex Mono — self-hosted, so no
+│                 page makes a third-party request
+├── screens/      the app screens, cropped from ../assets/play-store/phone-1080x1920
+├── mark.svg      the app icon, from ../assets/app-icon/src/ic_launcher.svg
+├── icon-*.png    favicon / touch icon
+└── og.png        link-preview image (the Play feature graphic)
+```
+
+The look is the app's: the palette is copied from the mobile app's
+`src/theme/colors.js` (terracotta on warm cream, warm dark scheme) and the type
+from the Play listing's `posters.html`. If either changes, change `site.css` too.
+If the Play screenshots are regenerated, re-crop `screens/` from them — the
+phone's screen sits at x 234, y 574, 612 × 1258 in each 1080 × 1920 board.
+
 ## Local preview
 
 Open a file directly:
@@ -37,7 +57,7 @@ without it silently drops the domain back to `*.github.io`.
 
 The domain currently points at the **`connect2ambreen.github.io`** user-pages
 repository, not at this one, so publishing today means copying the three HTML
-files across by hand.
+files **and the `assets/` folder** across by hand.
 
 That is worth changing. Two copies of a privacy policy is precisely how a
 correction gets made in one place and never reaches users — and this policy is

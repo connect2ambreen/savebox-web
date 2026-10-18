@@ -3,348 +3,879 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SaveBox — Save videos to your phone</title>
+<title>SaveBox — Save the video. Keep the file.</title>
 <meta name="description" content="Paste a video link, pick a quality, and SaveBox saves it straight to your phone's gallery. YouTube, TikTok, Instagram and Facebook. No account required.">
 <link rel="canonical" href="https://savebox.live/">
 
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="SaveBox">
 <meta property="og:url" content="https://savebox.live/">
-<meta property="og:title" content="SaveBox — Save videos to your phone">
-<meta property="og:description" content="Paste a video link, pick a quality, and SaveBox saves it straight to your phone's gallery. No account required.">
+<meta property="og:title" content="SaveBox — Save the video. Keep the file.">
+<meta property="og:description" content="Paste a link, pick a quality, and it lands in your gallery. No account required.">
+<meta property="og:image" content="https://savebox.live/assets/og.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://savebox.live/assets/og.png">
+<meta name="theme-color" content="#F7F2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#181110" media="(prefers-color-scheme: dark)">
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📥</text></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/mark.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+
+<link rel="preload" href="assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/karla.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/site.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "SaveBox",
+  "operatingSystem": "Android",
+  "applicationCategory": "MultimediaApplication",
+  "url": "https://savebox.live/",
+  "image": "https://savebox.live/assets/icon-512.png",
+  "description": "Paste a video link, pick a quality, and SaveBox saves it straight to your phone's gallery.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 
 <style>
-  :root {
-    --bg: #ffffff;
-    --bg-soft: #f6f7f9;
-    --bg-raised: #ffffff;
-    --fg: #14161a;
-    --fg-muted: #5b6472;
-    --border: #e3e6ea;
-    --accent: #1f6feb;
-    --accent-fg: #ffffff;
-    --shadow: 0 1px 2px rgb(16 22 32 / .04), 0 8px 24px rgb(16 22 32 / .06);
-    --radius: 14px;
-    --maxw: 1080px;
+  /* ---------- phone frame around the real app screens ---------- */
+  .device {
+    position: relative; width: 300px; max-width: 100%;
+    padding: 10px; border-radius: 46px;
+    background: #120C0B;
+    box-shadow: inset 0 0 0 1.5px rgb(255 246 240 / .10), inset 0 0 0 5px #1E1513, var(--shadow-xl);
   }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0d1117;
-      --bg-soft: #131922;
-      --bg-raised: #161d27;
-      --fg: #e8edf4;
-      --fg-muted: #99a5b5;
-      --border: #232c38;
-      --accent: #4f8ff7;
-      --accent-fg: #08121f;
-      --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
-    }
+  .device img {
+    width: 100%; height: auto; aspect-ratio: 612 / 1258;
+    border-radius: 36px; background: #181110;
   }
-
-  :root[data-theme="dark"] {
-    --bg: #0d1117;
-    --bg-soft: #131922;
-    --bg-raised: #161d27;
-    --fg: #e8edf4;
-    --fg-muted: #99a5b5;
-    --border: #232c38;
-    --accent: #4f8ff7;
-    --accent-fg: #08121f;
-    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
+  .device::after {
+    content: ""; position: absolute; inset: 10px; border-radius: 36px; pointer-events: none;
+    background: linear-gradient(115deg, rgb(255 255 255 / .07) 0%, transparent 28%);
   }
-
-  * { box-sizing: border-box; }
-
-  html { -webkit-text-size-adjust: 100%; }
-
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 400 17px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, "Helvetica Neue", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-
-  a { color: var(--accent); }
-
-  /* ---------- header ---------- */
-  header {
-    border-bottom: 1px solid var(--border);
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
-    backdrop-filter: saturate(180%) blur(12px);
-    position: sticky; top: 0; z-index: 10;
-  }
-  .bar {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px; gap: 16px;
-  }
-  .brand {
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 650; font-size: 18px; letter-spacing: -.01em;
-    color: var(--fg); text-decoration: none;
-  }
-  .mark {
-    width: 30px; height: 30px; border-radius: 9px;
-    background: var(--accent); color: var(--accent-fg);
-    display: grid; place-items: center; font-size: 16px; flex: none;
-  }
-  .nav { display: flex; gap: 22px; font-size: 15px; }
-  .nav a { color: var(--fg-muted); text-decoration: none; }
-  .nav a:hover { color: var(--fg); }
-  @media (max-width: 620px) { .nav { display: none; } }
 
   /* ---------- hero ---------- */
-  .hero { padding: 88px 0 72px; text-align: center; }
-  h1 {
-    font-size: clamp(34px, 6vw, 58px);
-    line-height: 1.08; letter-spacing: -.03em;
-    margin: 0 0 20px; font-weight: 700;
+  .hero { position: relative; isolation: isolate; background: var(--grad-hero); overflow: hidden; }
+  .hero::before, .hero::after {
+    content: ""; position: absolute; z-index: -1; border-radius: 50%; pointer-events: none;
   }
-  .lede {
-    font-size: clamp(17px, 2.2vw, 20px);
-    color: var(--fg-muted);
-    max-width: 620px; margin: 0 auto 34px;
-  }
-  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 13px 24px; border-radius: 11px;
-    font-size: 16px; font-weight: 560; text-decoration: none;
-    border: 1px solid transparent; cursor: default;
-  }
-  .btn-primary { background: var(--accent); color: var(--accent-fg); }
-  .btn-ghost {
-    background: var(--bg-raised); color: var(--fg);
-    border-color: var(--border); cursor: pointer;
-  }
-  .btn-ghost:hover { border-color: var(--fg-muted); }
-  .note { margin-top: 16px; font-size: 14px; color: var(--fg-muted); }
+  .hero::before { width: 720px; height: 720px; right: -180px; top: -200px; background: radial-gradient(circle, var(--bloom) 0%, transparent 68%); }
+  .hero::after  { width: 560px; height: 560px; left: -220px; top: 240px; background: radial-gradient(circle, var(--bloom-alt) 0%, transparent 68%); }
+  .rings { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .rings span { position: absolute; border: 1.5px solid color-mix(in srgb, var(--primary-bright) 26%, transparent); border-radius: 50%; }
+  .rings span:nth-child(1) { width: 120px; height: 120px; right: 4%; top: 18%; }
+  .rings span:nth-child(2) { width: 230px; height: 230px; left: -70px; bottom: 6%; }
+  .rings span:nth-child(3) { width: 12px; height: 12px; left: 46%; top: 16%; background: color-mix(in srgb, var(--primary-bright) 30%, transparent); border: 0; }
 
-  /* ---------- platforms ---------- */
-  .platforms {
-    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-    margin: 44px 0 0;
+  .hero-grid {
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center;
+    padding-top: 72px; padding-bottom: 104px;
   }
-  .chip {
-    padding: 7px 15px; border-radius: 999px;
-    border: 1px solid var(--border); background: var(--bg-raised);
-    font-size: 14.5px; color: var(--fg-muted);
+  .hero h1 { font-size: clamp(46px, 7.4vw, 88px); line-height: .98; margin: 0 0 26px; letter-spacing: -.03em; }
+  .hero h1 em { display: inline-block; }
+  .hero .lede { max-width: 520px; margin: 0 0 36px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .hero-cta .btn-ghost { padding: 15px 22px; }
+
+  .badges { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--border); max-width: 540px; }
+  .badge { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--fg-2); }
+  .badge i {
+    width: 34px; height: 34px; border-radius: var(--r-sm); display: grid; place-items: center; font-style: normal;
+    background: var(--surface); border: 1px solid var(--border); color: var(--primary); box-shadow: var(--shadow-sm);
+  }
+  .badge svg { width: 17px; height: 17px; }
+
+  .hero-art { position: relative; height: 640px; }
+  .hero-art .device { position: absolute; }
+  .hero-art .front { left: 50%; top: 0; transform: translateX(-30%) rotate(3deg); z-index: 2; }
+  .hero-art .back  { left: 50%; top: 56px; transform: translateX(-108%) rotate(-7deg) scale(.88); opacity: .96; z-index: 1; }
+  .chip-float {
+    position: absolute; z-index: 3; display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 16px 8px 8px; white-space: nowrap;
+    font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg);
+    animation: bob 6s ease-in-out infinite;
+  }
+  .chip-float i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-style: normal; }
+  .chip-float svg { width: 15px; height: 15px; }
+  .chip-float small { display: block; font-size: 12px; font-weight: 500; color: var(--fg-muted); line-height: 1.2; }
+  .chip-float b { display: block; line-height: 1.25; }
+  .chip-float.saved { right: 0; bottom: 110px; }
+  .chip-float.saved i { background: var(--success-soft); color: var(--success); }
+  .chip-float.mp4 { left: 2%; top: 44px; animation-delay: -3s; }
+  .chip-float.mp4 i { background: var(--primary-soft); color: var(--primary); }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; text-align: center; padding-top: 48px; padding-bottom: 72px; gap: 56px; }
+    .hero .lede { margin-inline: auto; }
+    .hero-cta, .badges { justify-content: center; margin-inline: auto; }
+    .hero-art { height: 560px; max-width: 520px; width: 100%; margin: 0 auto; }
+    .hero-art .front { transform: translateX(-22%) rotate(3deg); }
+    .hero-art .back  { transform: translateX(-100%) rotate(-7deg) scale(.86); }
+  }
+  @media (max-width: 520px) {
+    .hero-art { height: 520px; }
+    .hero-art .device { width: 250px; }
+    .hero-art .front { transform: translateX(-34%) rotate(3deg); }
+    .hero-art .back  { transform: translateX(-76%) rotate(-7deg) scale(.82); }
+    .chip-float.mp4 { left: 0; top: 10px; }
+    .chip-float.saved { right: 0; bottom: 70px; }
   }
 
-  /* ---------- sections ---------- */
-  section { padding: 64px 0; }
-  .band { background: var(--bg-soft); border-block: 1px solid var(--border); }
-  h2 {
-    font-size: clamp(24px, 3.4vw, 32px); letter-spacing: -.02em;
-    margin: 0 0 8px; font-weight: 680;
+  /* ---------- platform strip ---------- */
+  .strip { border-block: 1px solid var(--border); background: var(--surface); }
+  .strip .wrap { display: flex; align-items: center; justify-content: center; gap: 14px 28px; flex-wrap: wrap; padding-block: 26px; }
+  .strip p { margin: 0; font-size: 15px; color: var(--fg-muted); }
+  .plat { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .plat span {
+    font-family: var(--font-mono); font-weight: 500; font-size: 13px; letter-spacing: .12em;
+    padding: 8px 16px; border-radius: 999px; color: var(--fg-2);
+    border: 1px solid var(--border-strong); background: var(--bg);
   }
-  .sub { color: var(--fg-muted); margin: 0 0 36px; font-size: 16.5px; }
 
-  .steps { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); counter-reset: s; }
-  @media (max-width: 780px) { .steps { grid-template-columns: 1fr; } }
+  /* ---------- how it works: tabbed showcase ---------- */
+  .show { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  @media (max-width: 900px) { .show { grid-template-columns: 1fr; gap: 48px; } }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: step; }
   .step {
-    background: var(--bg-raised); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+    width: 100%; text-align: left; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 18px;
+    padding: 22px 24px; border-radius: var(--r-lg);
+    background: transparent; border: 1px solid transparent;
+    transition: background .25s, border-color .25s, box-shadow .25s;
+    position: relative; overflow: hidden;
   }
-  .step h3 { margin: 14px 0 6px; font-size: 17.5px; font-weight: 620; }
-  .step p { margin: 0; color: var(--fg-muted); font-size: 15.5px; }
-  .num {
-    width: 30px; height: 30px; border-radius: 8px;
-    background: var(--accent); color: var(--accent-fg);
-    display: grid; place-items: center; font-size: 14px; font-weight: 650;
+  .step:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
+  .step[aria-selected="true"] { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-md); }
+  .step .n {
+    width: 46px; height: 46px; border-radius: var(--r-md); display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 22px; font-weight: 600;
+    background: var(--primary-soft); color: var(--primary); transition: background .25s, color .25s, box-shadow .25s;
+  }
+  .step[aria-selected="true"] .n { background: var(--grad-brand); color: var(--on-primary); box-shadow: var(--shadow-glow); }
+  .step .t { display: block; margin: 2px 0 4px; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+  .step .d { display: block; margin: 0; color: var(--fg-muted); font-size: 16px; }
+  .step .bar-t { position: absolute; left: 24px; right: 24px; bottom: 0; height: 3px; border-radius: 3px; background: transparent; overflow: hidden; }
+  .step[aria-selected="true"] .bar-t { background: var(--track); }
+  .step[aria-selected="true"] .bar-t::after {
+    content: ""; display: block; height: 100%; width: 0; background: var(--primary-bright);
+    animation: progress var(--step-ms, 6000ms) linear forwards;
+  }
+  .paused .step .bar-t::after { animation: none; width: 0; }
+  @keyframes progress { to { width: 100%; } }
+
+  .show-stage { position: relative; display: grid; place-items: center; min-height: 660px; }
+  .show-stage::before {
+    content: ""; position: absolute; width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle, var(--bloom) 0%, transparent 68%);
+  }
+  .show-stage .device { width: 310px; }
+  .show-stage .device img { position: absolute; inset: 10px; width: calc(100% - 20px); opacity: 0; transition: opacity .5s ease; }
+  .show-stage .device img:first-child { position: relative; inset: auto; width: 100%; }
+  .show-stage .device img.on { opacity: 1; }
+  @media (max-width: 520px) { .show-stage { min-height: 560px; } .show-stage .device { width: 260px; } }
+
+  /* ---------- features bento ---------- */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .tile {
+    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl);
+    padding: 30px; box-shadow: var(--shadow-sm); background-image: var(--grad-card);
+    display: flex; flex-direction: column;
+  }
+  .tile h3 { font-size: 21px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 8px; }
+  .tile p { margin: 0; color: var(--fg-muted); font-size: 16px; }
+  .tile .ic {
+    width: 46px; height: 46px; border-radius: var(--r-md); display: grid; place-items: center; margin-bottom: 22px;
+    background: var(--primary-soft); color: var(--primary);
+  }
+  .tile .ic svg { width: 22px; height: 22px; }
+  .t-a { grid-column: span 4; }
+  .t-b { grid-column: span 2; grid-row: span 2; }
+  .t-c, .t-d { grid-column: span 2; }
+  .t-e, .t-f, .t-g { grid-column: span 2; }
+  @media (max-width: 960px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .t-a { grid-column: span 2; }
+    .t-b { grid-column: span 1; grid-row: span 2; }
+    .t-c, .t-d, .t-e, .t-f, .t-g { grid-column: span 1; }
+  }
+  @media (max-width: 640px) {
+    .bento { grid-template-columns: 1fr; }
+    .t-a, .t-b, .t-c, .t-d, .t-e, .t-f, .t-g { grid-column: auto; grid-row: auto; }
   }
 
-  .grid { display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--bg-raised); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 24px;
+  /* big tile: the file that comes out */
+  .t-a { flex-direction: row; gap: 32px; align-items: center; }
+  .t-a .copy { flex: 1 1 0; min-width: 0; }
+  .file {
+    flex: 0 0 300px; border-radius: var(--r-lg); padding: 18px;
+    background: var(--bg); border: 1px solid var(--border); box-shadow: var(--shadow-md);
   }
-  .card h3 { margin: 0 0 7px; font-size: 17.5px; font-weight: 620; }
-  .card p { margin: 0; color: var(--fg-muted); font-size: 15.5px; }
-
-  /* ---------- limits table ---------- */
-  .tablewrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-  table { border-collapse: collapse; width: 100%; background: var(--bg-raised); font-size: 15.5px; }
-  th, td { text-align: left; padding: 14px 20px; border-bottom: 1px solid var(--border); }
-  th { font-weight: 620; font-size: 13.5px; text-transform: uppercase;
-       letter-spacing: .05em; color: var(--fg-muted); }
-  tr:last-child td { border-bottom: 0; }
-  td:last-child { color: var(--fg-muted); }
-
-  /* ---------- footer ---------- */
-  footer {
-    border-top: 1px solid var(--border); padding: 36px 0;
-    color: var(--fg-muted); font-size: 14.5px;
+  .file-head { display: flex; align-items: center; gap: 12px; }
+  .file-ico {
+    width: 44px; height: 52px; border-radius: 8px; flex: none; position: relative;
+    background: var(--grad-mark); display: grid; place-items: center; color: #FFF6F0;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .06em; padding-top: 12px;
   }
-  .fbar { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .flinks { display: flex; gap: 20px; }
-  .flinks a { color: var(--fg-muted); text-decoration: none; }
-  .flinks a:hover { color: var(--fg); }
+  .file-ico::before { content: ""; position: absolute; right: 0; top: 0; width: 14px; height: 14px; background: color-mix(in srgb, #000 22%, transparent); border-bottom-left-radius: 6px; border-top-right-radius: 8px; }
+  .file-name { font-weight: 700; font-size: 15px; line-height: 1.3; }
+  .file-sub { font-size: 13px; color: var(--fg-muted); }
+  .specs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .specs span {
+    font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; letter-spacing: .06em;
+    padding: 5px 9px; border-radius: var(--r-xs); background: var(--surface); border: 1px solid var(--border); color: var(--fg-2);
+  }
+  .specs span.ok { background: var(--success-soft); border-color: transparent; color: var(--success); }
+  @media (max-width: 760px) { .t-a { flex-direction: column; align-items: stretch; } .file { flex-basis: auto; } }
+
+  /* tall tile: history screen */
+  .t-b { padding-bottom: 0; }
+  .t-b .shot {
+    margin: 28px auto 0; width: 100%; max-width: 260px; flex: 1 1 auto; min-height: 300px;
+    border-radius: 30px 30px 0 0; overflow: hidden; position: relative;
+    border: 8px solid #120C0B; border-bottom: 0; box-shadow: var(--shadow-lg);
+    background: #181110 url(assets/screens/05-history.webp) top center / 100% auto no-repeat;
+  }
+
+  /* quality picker */
+  .quals { display: grid; gap: 8px; margin-top: 22px; }
+  .qual {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 14px; border-radius: var(--r-sm); font-weight: 600; font-size: 15px;
+    background: var(--bg); border: 1px solid var(--border);
+  }
+  .qual small { font-weight: 500; color: var(--fg-muted); font-size: 13px; }
+  .qual.on { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+  .qual.on small { color: var(--primary); }
+  .qual .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-strong); flex: none; margin-right: 10px; }
+  .qual.on .radio { border-color: var(--primary); background: radial-gradient(circle, var(--primary) 0 4px, transparent 5px); }
+  .qual > span { display: flex; align-items: center; }
+
+  /* 24h dial */
+  .dial-row { display: flex; align-items: center; gap: 18px; margin-top: 22px; }
+  .dial { width: 84px; height: 84px; flex: none; position: relative; }
+  .dial svg { width: 84px; height: 84px; transform: rotate(-90deg); }
+  .dial b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+  .dial b small { font-size: 12px; font-family: var(--font-body); font-weight: 600; color: var(--fg-muted); margin-top: -6px; }
+  .dial-row p { font-size: 14.5px; }
+
+  /* notification */
+  .notif {
+    margin-top: 22px; border-radius: var(--r-md); padding: 12px 14px;
+    background: var(--bg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center;
+  }
+  .notif img { width: 30px; height: 30px; grid-row: span 2; border-radius: 8px; }
+  .notif b { font-size: 14px; display: flex; justify-content: space-between; }
+  .notif b span { color: var(--fg-muted); font-weight: 500; font-size: 12.5px; }
+  .notif .track { height: 5px; border-radius: 99px; background: var(--track); overflow: hidden; }
+  .notif .track i { display: block; height: 100%; width: 68%; background: var(--primary-bright); border-radius: inherit; }
+
+  .guest { display: flex; align-items: center; gap: 12px; margin-top: 22px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-alt); color: var(--fg-muted); flex: none; }
+  .avatar svg { width: 20px; height: 20px; }
+  .arrow { color: var(--primary); }
+  .arrow svg { width: 22px; height: 22px; }
+  .avatar.acct { background: var(--grad-brand); color: var(--on-primary); }
+  .guest small { display: block; color: var(--fg-muted); font-size: 12.5px; line-height: 1.3; }
+  .guest b { font-size: 14px; display: block; line-height: 1.3; }
+
+  .slots { display: flex; gap: 8px; margin-top: 22px; }
+  .slot { flex: 1; height: 44px; border-radius: var(--r-sm); border: 1px dashed var(--border-strong); display: grid; place-items: center; font-size: 12.5px; color: var(--fg-muted); font-weight: 600; }
+  .slot.run { border: 0; background: var(--primary-soft); color: var(--primary); position: relative; overflow: hidden; }
+  .slot.run::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 60%; background: var(--primary-bright); }
+  .slot.run:nth-child(2)::after { width: 30%; }
+
+  /* ---------- screens gallery ---------- */
+  .gallery-wrap { position: relative; }
+  .gallery {
+    display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 12px max(24px, calc((100vw - var(--maxw)) / 2 + 24px)) 40px;
+    scrollbar-width: none;
+  }
+  .gallery::-webkit-scrollbar { display: none; }
+  .shot-card { flex: 0 0 auto; width: 270px; scroll-snap-align: center; margin: 0; }
+  .shot-card .device { width: 100%; border-radius: 42px; }
+  .shot-card .device img { border-radius: 32px; }
+  .shot-card .device::after { border-radius: 32px; }
+  .shot-card figcaption { margin-top: 22px; text-align: center; padding: 0 6px; }
+  .shot-card figcaption span { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--primary); }
+  .shot-card figcaption b { display: block; font-family: var(--font-display); font-weight: 600; font-size: 21px; line-height: 1.2; letter-spacing: -.015em; margin-top: 6px; }
+  .gal-nav { display: flex; gap: 10px; justify-content: center; margin-top: 4px; }
+  .gal-nav .icon-btn { width: 46px; height: 46px; border-radius: 50%; }
+
+  /* ---------- privacy band ---------- */
+  .ember {
+    background:
+      radial-gradient(900px 500px at 85% 0%, rgba(194,104,63,.35), transparent 60%),
+      radial-gradient(700px 500px at 0% 100%, rgba(208,140,63,.16), transparent 60%),
+      linear-gradient(160deg, var(--ember-2) 0%, var(--ember) 70%);
+    color: var(--ember-fg);
+  }
+  .ember .section-head p.kicker { color: var(--ember-accent); }
+  .ember h2 em { color: #EFA582; }
+  .ember .section-head p { color: var(--ember-muted); }
+  .promises { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .promises { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .promises { grid-template-columns: 1fr; } }
+  .promise {
+    border-radius: var(--r-lg); padding: 26px;
+    background: rgb(255 246 240 / .05); border: 1px solid rgb(255 246 240 / .12);
+    backdrop-filter: blur(6px);
+  }
+  .promise .ic { width: 42px; height: 42px; border-radius: var(--r-sm); display: grid; place-items: center; background: rgba(239,165,130,.14); color: #EFA582; margin-bottom: 18px; }
+  .promise .ic svg { width: 20px; height: 20px; }
+  .promise h3 { margin: 0 0 6px; font-size: 18.5px; font-weight: 700; }
+  .promise p { margin: 0; color: var(--ember-muted); font-size: 15.5px; }
+  .ember-foot { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-ember { background: rgb(255 246 240 / .08); color: var(--ember-fg); border-color: rgb(255 246 240 / .2); }
+  .btn-ember:hover { border-color: rgb(255 246 240 / .45); }
+
+  /* ---------- free plan ---------- */
+  .plan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .plan { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .plan { grid-template-columns: 1fr; } }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 28px; box-shadow: var(--shadow-sm); }
+  .stat .k { font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-muted); }
+  .stat .v { font-family: var(--font-display); font-size: 68px; font-weight: 600; letter-spacing: -.04em; line-height: 1; margin: 18px 0 12px; color: var(--primary); font-variant-numeric: lining-nums; }
+  .stat .v.word { font-size: 32px; line-height: 1.1; margin: 22px 0 14px; letter-spacing: -.02em; }
+  .stat p { margin: 0; color: var(--fg-2); font-size: 15.5px; line-height: 1.5; }
+  .plan-note { text-align: center; color: var(--fg-muted); font-size: 15px; margin: 32px 0 0; }
+
+  /* ---------- FAQ ---------- */
+  .faq-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; align-items: start; }
+  @media (max-width: 900px) { .faq-grid { grid-template-columns: 1fr; gap: 24px; } }
+  .faq-grid .section-head { position: sticky; top: 110px; margin: 0; }
+  @media (max-width: 900px) { .faq-grid .section-head { position: static; } }
+  .faq { border-top: 1px solid var(--border); }
+  .faq details { border-bottom: 1px solid var(--border); }
+  .faq summary {
+    list-style: none; cursor: pointer; padding: 24px 4px; display: flex; justify-content: space-between; gap: 20px; align-items: center;
+    font-size: 19px; font-weight: 700; letter-spacing: -.01em;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--primary); }
+  .faq summary .pm { width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); transition: transform .25s ease; }
+  .faq summary .pm svg { width: 16px; height: 16px; }
+  .faq details[open] summary .pm { transform: rotate(45deg); }
+  .faq details p { margin: -6px 4px 24px; color: var(--fg-2); max-width: 640px; }
+
+  /* ---------- closing CTA ---------- */
+  .closer-card {
+    position: relative; overflow: hidden; isolation: isolate;
+    border-radius: 36px; padding: 72px 40px; text-align: center;
+    background: var(--grad-brand); color: var(--on-primary); box-shadow: 0 30px 60px -24px var(--glow);
+  }
+  .closer-card::before, .closer-card::after { content: ""; position: absolute; z-index: -1; border-radius: 50%; border: 1.5px solid rgb(255 246 240 / .18); }
+  .closer-card::before { width: 420px; height: 420px; right: -120px; top: -160px; }
+  .closer-card::after  { width: 300px; height: 300px; left: -100px; bottom: -150px; }
+  .closer-card img { width: 84px; height: 84px; margin: 0 auto 26px; filter: drop-shadow(0 12px 24px rgb(0 0 0 / .25)); }
+  .closer-card h2 { font-size: clamp(34px, 5vw, 58px); line-height: 1.04; margin: 0 0 14px; }
+  .closer-card h2 em { color: inherit; opacity: .85; }
+  .closer-card p { margin: 0 auto 32px; max-width: 520px; font-size: 18px; opacity: .9; }
+  .closer-card .store { background: #FFF6F0; color: #241A14; }
+  .closer-card .store svg { color: #A9502D; }
+  :root[data-theme="dark"] .closer-card .store { background: #241A14; color: #FBF3EC; }
+  :root[data-theme="dark"] .closer-card .store svg { color: #EFA582; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .closer-card .store { background: #241A14; color: #FBF3EC; }
+    :root:not([data-theme="light"]) .closer-card .store svg { color: #EFA582; }
+  }
+  @media (max-width: 520px) { .closer-card { padding: 56px 22px; border-radius: 28px; } }
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<header>
+<header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="/">
-      <span class="mark" aria-hidden="true">↓</span>
+      <img class="mark" src="assets/mark.svg" alt="" width="34" height="34">
       SaveBox
     </a>
-    <nav class="nav">
+    <nav class="nav" aria-label="Primary">
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
+      <a href="#screens">Screens</a>
       <a href="#plan">Free plan</a>
+      <a href="#faq">FAQ</a>
     </nav>
-    <button class="btn btn-ghost" id="theme" type="button" aria-label="Toggle colour theme">
-      <span id="theme-icon" aria-hidden="true">◐</span>
-    </button>
+    <div class="bar-actions">
+      <button class="icon-btn theme-btn" type="button" aria-label="Toggle colour theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm bar-cta" href="#get">Get SaveBox</a>
+      <button class="icon-btn menu-btn" type="button" aria-label="Menu" aria-expanded="false">
+        <svg class="bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<main>
+<main id="main">
 
-  <div class="wrap hero">
-    <h1>Save videos to your phone.</h1>
-    <p class="lede">
-      Paste a link, pick a quality, and SaveBox downloads the video straight into
-      your gallery — ready to watch offline, wherever you are.
-    </p>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="rings" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kicker">Video saver for Android</p>
+        <h1>Save the video.<br><em>Keep the file.</em></h1>
+        <p class="lede">
+          Paste a link, pick a quality, and SaveBox downloads the video straight into
+          your gallery — ready to watch offline, wherever you are.
+        </p>
+        <div class="hero-cta">
+          <span class="store" role="img" aria-label="Android app coming soon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3.6v16.8c0 .8.9 1.3 1.6.9l14-8.4c.7-.4.7-1.4 0-1.8l-14-8.4C5.9 2.3 5 2.8 5 3.6z"/></svg>
+            <span><small>Coming soon to</small><b>Android</b></span>
+          </span>
+          <a class="btn btn-ghost" href="#how">See how it works
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </a>
+        </div>
+        <div class="badges">
+          <span class="badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></i>No account needed</span>
+          <span class="badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></i>Saves to your gallery</span>
+          <span class="badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></i>Four platforms</span>
+        </div>
+      </div>
 
-    <div class="cta">
-      <span class="btn btn-primary">Android app — coming soon</span>
+      <div class="hero-art" aria-hidden="true">
+        <div class="device back"><img src="assets/screens/04-downloads.webp" alt="" width="612" height="1258"></div>
+        <div class="device front"><img src="assets/screens/01-paste.webp" alt="" width="612" height="1258" fetchpriority="high"></div>
+        <div class="chip-float mp4"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></i><span><small>Plays anywhere</small><b>H.264 · MP4</b></span></div>
+        <div class="chip-float saved"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><span><small>Movies/SaveBox</small><b>Saved to gallery</b></span></div>
+      </div>
     </div>
-    <p class="note">No account needed. Open the app and paste a link.</p>
+  </section>
 
-    <div class="platforms">
-      <span class="chip">YouTube</span>
-      <span class="chip">TikTok</span>
-      <span class="chip">Instagram</span>
-      <span class="chip">Facebook</span>
+  <!-- ============ PLATFORMS ============ -->
+  <div class="strip">
+    <div class="wrap">
+      <p>Paste links from</p>
+      <div class="plat"><span>YOUTUBE</span><span>TIKTOK</span><span>INSTAGRAM</span><span>FACEBOOK</span></div>
+      <p>and their short links</p>
     </div>
   </div>
 
-  <section class="band" id="how">
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section" id="how">
     <div class="wrap">
-      <h2>How it works</h2>
-      <p class="sub">Three steps, and the last one happens on its own.</p>
+      <div class="section-head reveal">
+        <p class="kicker">How it works</p>
+        <h2>Three steps. <em>The last one</em> happens on its own.</h2>
+        <p>From a link in your clipboard to a video in your gallery.</p>
+      </div>
 
-      <div class="steps">
-        <div class="step">
-          <div class="num">1</div>
-          <h3>Paste the link</h3>
-          <p>Copy a video URL from YouTube, TikTok, Instagram or Facebook and paste
-             it in. SaveBox shows you the title, length and thumbnail first.</p>
+      <div class="show" id="show">
+        <div class="steps reveal" role="tablist" aria-label="How SaveBox works">
+          <button class="step" role="tab" id="tab-1" aria-controls="stage" aria-selected="true" data-i="0">
+            <span class="n">1</span>
+            <span><span class="t">Paste the link</span>
+              <span class="d">Copy a video URL from YouTube, TikTok, Instagram or Facebook and paste
+                 it in. SaveBox shows you the title, length and thumbnail first.</span></span>
+            <span class="bar-t"></span>
+          </button>
+          <button class="step" role="tab" id="tab-2" aria-controls="stage" aria-selected="false" data-i="1">
+            <span class="n">2</span>
+            <span><span class="t">Pick a quality</span>
+              <span class="d">Best available, 720p or 480p — whichever suits the video and the space
+                 you have. You see the choice before anything downloads.</span></span>
+            <span class="bar-t"></span>
+          </button>
+          <button class="step" role="tab" id="tab-3" aria-controls="stage" aria-selected="false" data-i="2">
+            <span class="n">3</span>
+            <span><span class="t">It lands in your gallery</span>
+              <span class="d">The finished video is saved to Movies/SaveBox and shows up in your
+                 gallery app like anything else you've recorded.</span></span>
+            <span class="bar-t"></span>
+          </button>
         </div>
-        <div class="step">
-          <div class="num">2</div>
-          <h3>Pick a quality</h3>
-          <p>Best available, 720p or 480p — whichever suits the video and the space
-             you have. You see the choice before anything downloads.</p>
-        </div>
-        <div class="step">
-          <div class="num">3</div>
-          <h3>It lands in your gallery</h3>
-          <p>The finished video is saved to Movies/SaveBox and shows up in your
-             gallery app like anything else you've recorded.</p>
+
+        <div class="show-stage reveal" id="stage" role="tabpanel" aria-live="polite">
+          <div class="device">
+            <img class="on" src="assets/screens/01-paste.webp" alt="SaveBox home screen with Paste and analyze button" width="612" height="1258" loading="lazy">
+            <img src="assets/screens/02-quality.webp" alt="Choosing a download quality" width="612" height="1258" loading="lazy">
+            <img src="assets/screens/03-progress.webp" alt="A download in progress" width="612" height="1258" loading="lazy">
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="features">
+  <!-- ============ FEATURES ============ -->
+  <section class="section section-alt" id="features">
     <div class="wrap">
-      <h2>Built to just work</h2>
-      <p class="sub">The details that decide whether a download is actually usable.</p>
+      <div class="section-head reveal">
+        <p class="kicker">Features</p>
+        <h2>Built to <em>just work.</em></h2>
+        <p>The details that decide whether a download is actually usable.</p>
+      </div>
 
-      <div class="grid">
-        <div class="card">
-          <h3>Plays on any device</h3>
-          <p>Every download is converted to an H.264/AAC MP4 with fast-start
-             enabled, so it opens natively on any phone instead of needing a
-             particular player.</p>
-        </div>
-        <div class="card">
+      <div class="bento">
+        <article class="tile t-a reveal">
+          <div class="copy">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span>
+            <h3>Plays on any device</h3>
+            <p>Every download is converted to an H.264/AAC MP4 with fast-start
+               enabled, so it opens natively on any phone instead of needing a
+               particular player.</p>
+          </div>
+          <div class="file" aria-hidden="true">
+            <div class="file-head">
+              <span class="file-ico">MP4</span>
+              <span><span class="file-name">your-video.mp4</span><br><span class="file-sub">Movies/SaveBox</span></span>
+            </div>
+            <div class="specs"><span>H.264</span><span>AAC</span><span>FAST-START</span><span class="ok">✓ PLAYS NATIVELY</span></div>
+          </div>
+        </article>
+
+        <article class="tile t-b reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg></span>
+          <h3>Your history, kept</h3>
+          <p>Every download is recorded, so you can see what you saved and when —
+             even after the file itself has been cleared from the server.</p>
+          <div class="shot" role="img" aria-label="The History screen"></div>
+        </article>
+
+        <article class="tile t-c reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
+          <h3>Your quality, your call</h3>
+          <p>You see the choice before anything downloads.</p>
+          <div class="quals" aria-hidden="true">
+            <div class="qual"><span><i class="radio"></i>Best available</span><small>Source</small></div>
+            <div class="qual on"><span><i class="radio"></i>720p</span><small>HD</small></div>
+            <div class="qual"><span><i class="radio"></i>480p</span><small>Smaller</small></div>
+          </div>
+        </article>
+
+        <article class="tile t-d reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5"/></svg></span>
+          <h3>Nothing lingers</h3>
+          <div class="dial-row">
+            <div class="dial" aria-hidden="true">
+              <svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="none" stroke="var(--track)" stroke-width="7"/><circle cx="42" cy="42" r="36" fill="none" stroke="var(--primary-bright)" stroke-width="7" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="62"/></svg>
+              <b>24<small>hours</small></b>
+            </div>
+            <p>Files are held on the server just long enough for your phone to fetch
+               them — 24 hours — then deleted automatically.</p>
+          </div>
+        </article>
+
+        <article class="tile t-e reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
           <h3>No account required</h3>
           <p>A fresh install works immediately as a guest, with its own history.
              Creating an account is optional, and upgrades that guest in place —
              nothing you've already downloaded is lost.</p>
-        </div>
-        <div class="card">
-          <h3>Your history, kept</h3>
-          <p>Every download is recorded, so you can see what you saved and when —
-             even after the file itself has been cleared from the server.</p>
-        </div>
-        <div class="card">
-          <h3>Nothing lingers</h3>
-          <p>Files are held on the server just long enough for your phone to fetch
-             them — 24 hours — then deleted automatically.</p>
-        </div>
+          <div class="guest" aria-hidden="true">
+            <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+            <span><b>Guest</b><small>Works right away</small></span>
+            <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <span class="avatar acct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span><b>Account</b><small>History kept</small></span>
+          </div>
+        </article>
+
+        <article class="tile t-f reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span>
+          <h3>Keeps going in the background</h3>
+          <p>Switch apps and the transfer carries on, with progress in your notifications.</p>
+          <div class="notif" aria-hidden="true">
+            <img src="assets/mark.svg" alt="">
+            <b>Downloading <span>720p</span></b>
+            <span class="track"><i></i></span>
+          </div>
+        </article>
+
+        <article class="tile t-g reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
+          <h3>Two at once, the rest queued</h3>
+          <p>Add as many as you like — they run in turn.</p>
+          <div class="slots" aria-hidden="true">
+            <span class="slot run">Running</span><span class="slot run">Running</span><span class="slot">Queued</span>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="band" id="plan">
+  <!-- ============ SCREENS ============ -->
+  <section class="section" id="screens">
     <div class="wrap">
-      <h2>Free plan</h2>
-      <p class="sub">What everyone gets, without paying and without an account.</p>
+      <div class="section-head center reveal">
+        <p class="kicker">Inside the app</p>
+        <h2>Calm, warm, and <em>out of your way.</em></h2>
+        <p>Six screens, each doing one job well.</p>
+      </div>
+    </div>
+    <div class="gallery-wrap reveal">
+      <div class="gallery" id="gallery" tabindex="0" aria-label="App screenshots">
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/01-paste.webp" alt="Home screen: paste and analyze a link" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>Paste &amp; go</span><b>One paste, one saved file</b></figcaption>
+        </figure>
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/02-quality.webp" alt="Quality picker showing file sizes" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>Quality</span><b>See the size before you commit</b></figcaption>
+        </figure>
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/03-progress.webp" alt="Download progress" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>Progress</span><b>Watch it land</b></figcaption>
+        </figure>
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/04-downloads.webp" alt="Downloads list with active and finished files" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>Downloads</span><b>Everything you saved, in one place</b></figcaption>
+        </figure>
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/05-history.webp" alt="Download history" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>History</span><b>It remembers so you don't</b></figcaption>
+        </figure>
+        <figure class="shot-card">
+          <div class="device"><img src="assets/screens/06-account.webp" alt="Profile screen for a guest" width="612" height="1258" loading="lazy"></div>
+          <figcaption><span>Account</span><b>Start as a guest. Stay one if you like</b></figcaption>
+        </figure>
+      </div>
+      <div class="gal-nav">
+        <button class="icon-btn" type="button" data-dir="-1" aria-label="Previous screenshots"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="icon-btn" type="button" data-dir="1" aria-label="Next screenshots"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </section>
 
-      <div class="tablewrap">
-        <table>
-          <thead>
-            <tr><th>What</th><th>Limit</th><th>Notes</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Downloads per day</td><td>10</td><td>Resets every 24 hours</td></tr>
-            <tr><td>At the same time</td><td>2</td><td>Queue the rest, they run in turn</td></tr>
-            <tr><td>Quality</td><td>Up to best available</td><td>Capped only by the source</td></tr>
-            <tr><td>Account</td><td>Optional</td><td>Guests get the same limits</td></tr>
-          </tbody>
-        </table>
+  <!-- ============ PRIVACY ============ -->
+  <section class="section ember" id="privacy">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker">Privacy</p>
+        <h2>Built to <em>forget.</em></h2>
+        <p>SaveBox holds as little as it can, for as short a time as it can.</p>
+      </div>
+      <div class="promises">
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></span>
+          <h3>No ads, no analytics, no trackers</h3>
+          <p>The app contains no advertising or analytics SDKs of any kind.</p>
+        </div>
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <h3>We never sell or rent your data</h3>
+          <p>To anyone, for any purpose.</p>
+        </div>
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+          <h3>An account is optional</h3>
+          <p>Use SaveBox without giving us a name or an email address.</p>
+        </div>
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span>
+          <h3>Your videos are yours</h3>
+          <p>Once a file is saved to your phone we cannot see it. Our server copy is deleted within 24 hours.</p>
+        </div>
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></span>
+          <h3>Deletion is a hard delete</h3>
+          <p>Delete your account and your history is removed, not anonymised.</p>
+        </div>
+        <div class="promise reveal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></span>
+          <h3>Only the files it made</h3>
+          <p>No access to your photos or to other apps' videos, and no "all files access" permission.</p>
+        </div>
+      </div>
+      <div class="ember-foot reveal">
+        <a class="btn btn-ember" href="privacy.html">Read the privacy policy</a>
+        <a class="btn btn-ember" href="delete-account.html">Delete your account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FREE PLAN ============ -->
+  <section class="section" id="plan">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <p class="kicker">Free plan</p>
+        <h2>Everything you need, <em>free.</em></h2>
+        <p>What everyone gets, without paying and without an account.</p>
+      </div>
+      <div class="plan">
+        <div class="stat reveal"><div class="k">Downloads per day</div><div class="v">10</div><p>Resets every 24 hours</p></div>
+        <div class="stat reveal"><div class="k">At the same time</div><div class="v">2</div><p>Queue the rest, they run in turn</p></div>
+        <div class="stat reveal"><div class="k">Quality</div><div class="v word">Up to best available</div><p>Capped only by the source</p></div>
+        <div class="stat reveal"><div class="k">Account</div><div class="v word">Optional</div><p>Guests get the same limits</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section section-alt" id="faq">
+    <div class="wrap faq-grid">
+      <div class="section-head reveal">
+        <p class="kicker">FAQ</p>
+        <h2>Questions, <em>answered.</em></h2>
+        <p>Anything else? Email <a href="mailto:ehsanrazzaq55@gmail.com">ehsanrazzaq55@gmail.com</a>.</p>
+      </div>
+      <div class="faq reveal">
+        <details open>
+          <summary>Is SaveBox free?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>Yes. The free plan gives everyone 10 downloads a day, 2 at a time, at up to the best quality the source offers — with or without an account.</p>
+        </details>
+        <details>
+          <summary>Do I need an account?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>No. A fresh install works immediately as a guest, with its own history. If you create an account later, it upgrades that guest in place, so nothing you've already downloaded is lost.</p>
+        </details>
+        <details>
+          <summary>Where do my videos go?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>Into <strong>Movies/SaveBox</strong> on your phone, where they show up in your gallery app like anything else you've recorded. They belong to you — deleting the app or its data does not touch files you've already saved.</p>
+        </details>
+        <details>
+          <summary>Which sites does it work with?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>YouTube, TikTok, Instagram and Facebook, including their short links.</p>
+        </details>
+        <details>
+          <summary>What quality and format do I get?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>You choose best available, 720p or 480p before the download starts. Every file is an H.264/AAC MP4 with fast-start, so it plays natively on any phone.</p>
+        </details>
+        <details>
+          <summary>Do you keep copies of my videos?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>Only long enough for your phone to fetch them. The server copy is deleted automatically within 24 hours, and once a file is on your phone we have no access to it.</p>
+        </details>
+        <details>
+          <summary>How do I delete my account?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>Open <strong>Profile → Delete account</strong> in the app and confirm, or email us from your account's address. It's a hard delete — see <a href="delete-account.html">delete your account</a> for exactly what is removed.</p>
+        </details>
+        <details>
+          <summary>Can I download any video?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+          <p>SaveBox is a tool. You are responsible for making sure you have the right to download and keep any video you save with it, and for respecting the terms of the site it came from and the rights of whoever made it.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CLOSER ============ -->
+  <section class="section" id="get">
+    <div class="wrap">
+      <div class="closer-card reveal">
+        <img src="assets/mark.svg" alt="" width="84" height="84">
+        <h2>Save the video.<br><em>Keep the file.</em></h2>
+        <p>Paste a link, pick a quality, and it lands in your gallery. SaveBox is coming soon to Android.</p>
+        <span class="store" role="img" aria-label="Android app coming soon">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3.6v16.8c0 .8.9 1.3 1.6.9l14-8.4c.7-.4.7-1.4 0-1.8l-14-8.4C5.9 2.3 5 2.8 5 3.6z"/></svg>
+          <span><small>Coming soon to</small><b>Android</b></span>
+        </span>
       </div>
     </div>
   </section>
 
 </main>
 
-<footer>
-  <div class="wrap fbar">
-    <span>© <span id="year">2026</span> SaveBox</span>
-    <nav class="flinks">
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#plan">Free plan</a>
-      <a href="/privacy.html">Privacy</a>
-      <a href="/delete-account.html">Delete account</a>
-    </nav>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fabout">
+        <a class="brand" href="/"><img class="mark" src="assets/mark.svg" alt="" width="34" height="34">SaveBox</a>
+        <p>Paste a link, pick a quality, and the video lands in your gallery. No account required.</p>
+      </div>
+      <div class="fcol">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/#how">How it works</a></li>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#screens">Screens</a></li>
+          <li><a href="/#plan">Free plan</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy policy</a></li>
+          <li><a href="delete-account.html">Delete account</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:ehsanrazzaq55@gmail.com">ehsanrazzaq55@gmail.com</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© <span id="year">2026</span> SaveBox. All rights reserved.</span>
+      <span>Made for Android · savebox.live</span>
+    </div>
   </div>
 </footer>
 
 <script>
-  // Theme: follow the system unless the visitor has chosen otherwise.
+  // How-it-works showcase: tabs swap the phone screen, and advance on their own
+  // until the visitor picks one. Without JS the first step simply stays shown.
   (function () {
-    var root = document.documentElement;
-    var saved = null;
-    try { saved = localStorage.getItem('savebox-theme'); } catch (e) {}
-    if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+    var show = document.getElementById('show');
+    if (!show) return;
+    var tabs = show.querySelectorAll('.step');
+    var imgs = show.querySelectorAll('.show-stage img');
+    var STEP_MS = 6000, i = 0, timer = null;
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    show.style.setProperty('--step-ms', STEP_MS + 'ms');
 
-    var btn = document.getElementById('theme');
-    btn.addEventListener('click', function () {
-      var dark = root.getAttribute('data-theme') === 'dark' ||
-                 (!root.hasAttribute('data-theme') &&
-                  matchMedia('(prefers-color-scheme: dark)').matches);
-      var next = dark ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem('savebox-theme', next); } catch (e) {}
+    function select(n) {
+      i = n;
+      tabs.forEach(function (t, k) {
+        t.setAttribute('aria-selected', String(k === n));
+        t.tabIndex = k === n ? 0 : -1;
+        // restart the progress bar animation
+        var b = t.querySelector('.bar-t'); b.replaceWith(b.cloneNode());
+      });
+      imgs.forEach(function (im, k) { im.classList.toggle('on', k === n); });
+    }
+    function stop() { clearInterval(timer); timer = null; show.classList.add('paused'); }
+
+    tabs.forEach(function (t, k) {
+      t.addEventListener('click', function () { stop(); select(k); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault(); stop();
+        var d = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1 : -1;
+        var n = (i + d + tabs.length) % tabs.length;
+        select(n); tabs[n].focus();
+      });
     });
+    select(0);
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    if (still) { show.classList.add('paused'); return; }
+    // Only run while the section is on screen.
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (show.classList.contains('paused')) return;
+        if (e.isIntersecting && !timer) {
+          select(i);
+          timer = setInterval(function () { select((i + 1) % tabs.length); }, STEP_MS);
+        } else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
+      });
+    }, { threshold: 0.4 });
+    io.observe(show);
+  })();
+
+  // Screens gallery arrows.
+  (function () {
+    var g = document.getElementById('gallery');
+    if (!g) return;
+    document.querySelectorAll('.gal-nav button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        g.scrollBy({ left: Number(b.dataset.dir) * 298 * 2, behavior: 'smooth' });
+      });
+    });
   })();
 </script>
 

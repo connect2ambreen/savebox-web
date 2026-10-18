@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+<linearGradient id="mark" x1="0" y1="0" x2="0.72" y2="1">
+      <stop offset="0" stop-color="#C2683F"/>
+      <stop offset="0.55" stop-color="#A9502D"/>
+      <stop offset="1" stop-color="#8F3F23"/>
+    </linearGradient>
+<mask id="glyph" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#000000"/>
+      <rect x="222" y="284" width="580" height="380" rx="92" fill="none" stroke="#ffffff" stroke-width="74" stroke-linejoin="round"/>
+      <path d="M444 386 L620 474 L444 562 Z" fill="#ffffff" stroke="#ffffff" stroke-width="52" stroke-linejoin="round"/>
+      <circle cx="716" cy="702" r="188" fill="#000000"/>
+      <circle cx="716" cy="702" r="140" fill="#ffffff"/>
+      <g fill="none" stroke="#000000" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M716 622 V770"/>
+        <path d="M660 716 L716 772 L772 716"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#mark)"/>
+  <g transform="translate(95.6,76.4) scale(0.8)">
+    <rect width="1024" height="1024" fill="#FFF6F0" mask="url(#glyph)"/>
+  </g>
+</svg>
